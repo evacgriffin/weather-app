@@ -8,6 +8,11 @@ html {
   }
 }
 
+.navbar .nav-link-color {
+    color: #0d6efd !important;
+    text-decoration: underline;
+}
+
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
@@ -19,4 +24,38 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+.how-to {
+    border: 2px solid black;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.delete-box {
+    color: red;
+    border: 2px solid red;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.cancel-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.delete-cancel {
+    font-size: 40px;
+    text-align: center;
+}
+
+.bottom-space {
+    margin-bottom: 10px;
 }
