@@ -1,0 +1,55 @@
+﻿@page
+@model WeatherApp.Pages.Data.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>DataPoint</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="DataPoint.Id" />
+            <div class="form-group">
+                <label asp-for="DataPoint.Location" class="control-label"></label>
+                <input asp-for="DataPoint.Location" class="form-control" />
+                <span asp-validation-for="DataPoint.Location" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DataPoint.Date" class="control-label"></label>
+                <input asp-for="DataPoint.Date" class="form-control" />
+                <span asp-validation-for="DataPoint.Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DataPoint.Time" class="control-label"></label>
+                <input asp-for="DataPoint.Time" class="form-control" />
+                <span asp-validation-for="DataPoint.Time" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DataPoint.Temperature" class="control-label"></label>
+                <input asp-for="DataPoint.Temperature" class="form-control" />
+                <span asp-validation-for="DataPoint.Temperature" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DataPoint.Humidity" class="control-label"></label>
+                <input asp-for="DataPoint.Humidity" class="form-control" />
+                <span asp-validation-for="DataPoint.Humidity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
