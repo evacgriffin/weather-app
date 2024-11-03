@@ -10,13 +10,24 @@
 <div class="how-to">
     <h2>How To</h2>
     <p>
-        Welcome to WeatherApp! Below, you can view the most recent weather data. Click <strong>Add New Data</strong> below to add a new data entry to the table. You can <strong>Edit</strong> or <strong>Delete</strong> an existing data entry by clicking the corresponding link next to it on the right side in the table.
+        Welcome to WeatherApp! Below, you can view weather data from different locations. Click <strong>Add New Data</strong> below to add a new data entry to the database. To make changes, you can <strong>Edit</strong> or <strong>Delete</strong> an existing data entry by clicking the corresponding link next to it on the right side in the table.
     </p>
 </div>
 
 <p>
     <a asp-page="Create">Add New Data</a>
 </p>
+
+<form>
+    <p>
+        <select asp-for="DataLocation" asp-items="Model.Locations">
+            <option value="">All</option>
+        </select>
+        <label>Location: <input type="text" asp-for="SearchString" /></label>
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+
 <table class="table">
     <thead>
         <tr>
