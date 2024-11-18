@@ -75,3 +75,52 @@
 }
     </tbody>
 </table>
+
+<div id="weather-image-container">
+    <p>Click the button to load an image.</p>
+</div>
+
+<button id="image-btn">Display Image</button>
+
+<input type="hidden" id="antiforgery-token" value="@Model.AntiForgeryToken" />
+@section Scripts {
+    <script>
+        // Event listener for the image button
+        document.getElementById("image-btn").addEventListener("click", function () {
+            
+            // Get anti-forgery token
+            const token = document.getElementById("antiforgery-token").value;
+
+            // Send AJAX request
+            fetch('@Url.Page("./Index", "FetchImage")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({})
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text(); // Read server response (image URL) as plain text
+                })
+                .then(imageUrl => {
+                    console.log("Received image URL:", imageUrl);
+
+                    const imageContainer = document.getElementById("weather-image-container");
+
+                    if (imageUrl) {
+                        imageContainer.innerHTML = `<img src="${imageUrl}" alt="Server Image"  />`;
+                    } else {
+                        imageContainer.innerHTML = `<p>Failed to fetch image. Server returned no URL.</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching image:", error);
+                    document.getElementById("weather-image-container").innerHTML = `<p>Error occurred. Please try again later.</p>`;
+                });
+        });
+    </script>
+}

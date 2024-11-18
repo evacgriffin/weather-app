@@ -59,3 +59,8 @@ body {
 .bottom-space {
     margin-bottom: 10px;
 }
+
+#weather-image-container img {
+    max-width: 300px;
+    height: auto;
+}
