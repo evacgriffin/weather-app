@@ -1,5 +1,6 @@
 ﻿@page "/Home"
 @model WeatherApp.Pages.Data.IndexModel
+@using WeatherApp.Models
 
 @{
     ViewData["Title"] = "Index";
@@ -10,13 +11,33 @@
 <div class="how-to">
     <h2>How To</h2>
     <p>
-        Welcome to WeatherApp! Below, you can view weather data from different locations. Click <strong>Add New Data</strong> below to manually add a new data entry to the database. Click the <strong>Request Sensor Data</strong> button to request a new sensor measurement. To make changes, you can <strong>Edit</strong> or <strong>Delete</strong> an existing data entry by clicking the corresponding link next to it on the right side in the table.
+        Welcome to WeatherApp! Below, you can view weather data from different locations. Click <strong>Add New Data</strong> below to manually add a new data entry to the database. Click the <strong>Request Sensor Data</strong> button to request a new sensor measurement. To make changes, you can <strong>Edit</strong> or <strong>Delete</strong> an existing data entry by clicking the corresponding link next to it on the right side in the table. Click the <strong>Generate Graph</strong> button to generate a graph of the data.
     </p>
 </div>
 
 <p>
     <a asp-page="Create">Add New Data</a>
 </p>
+
+<button class="btn-primary" id="sensor-btn">Request Sensor Data</button>
+
+<button class="btn-primary" id="graph-btn">Generate Graph</button>
+
+<div class="microservice-container" id="weather-graph-container"></div>
+
+<div class="microservice-container" id="weather-image-container">
+    @if (StaticState.weatherImageUrl != null)
+    {
+        <img src="@StaticState.weatherImageUrl" alt="Weather Image" />
+    }
+</div>
+
+<div class="microservice-container" id="weather-notification-container">
+    @if (StaticState.weatherNotificationString != null)
+    {
+        <p>@StaticState.weatherNotificationString</p>
+    }
+</div>
 
 <form>
     <p>
@@ -27,8 +48,6 @@
         <input type="submit" value="Filter" />
     </p>
 </form>
-
-<button class="btn-primary" id="sensor-btn">Request Sensor Data</button>
 
 <table class="table">
     <thead>
@@ -48,8 +67,8 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
-@foreach (var item in Model.DataPoint) {
+    <tbody id="data-table-body">
+        @foreach (var item in Model.DataPoint) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Location)
@@ -72,35 +91,17 @@
     </tbody>
 </table>
 
-<div class="microservice-container" id="weather-image-container">
-    <p>Click the button to load an image.</p>
-</div>
-
-<button class="btn-primary" id="image-btn">Display Image</button>
-
-<div class="microservice-container" id="weather-notification-container">
-    <p>Click the button to receive a notification.</p>
-</div>
-
-<button class="btn-primary" id="notification-btn">Display Notification</button>
-
-<div class="microservice-container" id="weather-graph-container">
-    <p>Click the button to generate a graph of your data.</p>
-</div>
-
-<button class="btn-primary" id="graph-btn">Generate Graph</button>
-
 <input type="hidden" id="antiforgery-token" value="@Model.AntiForgeryToken" />
 @section Scripts {
     <script>
-        // Event listener for the image button
-        document.getElementById("image-btn").addEventListener("click", function () {
-            
+        // Event listener for the sensor button
+        document.getElementById("sensor-btn").addEventListener("click", function () {
+
             // Get anti-forgery token
             const token = document.getElementById("antiforgery-token").value;
 
             // Send AJAX request
-            fetch('@Url.Page("./Index", "FetchImage")', {
+            fetch('@Url.Page("./Index", "FetchSensorData")', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -112,60 +113,40 @@
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    return response.text(); // Read server response (image URL) as plain text
+                    return response.json();
                 })
-                .then(imageUrl => {
-                    console.log("Received image URL:", imageUrl);
+                .then(data => {
+                    if (data.success) {
+                        console.log("Sensor data added successfully.");
 
-                    const imageContainer = document.getElementById("weather-image-container");
+                        const imageContainer = document.getElementById("weather-image-container");
+                        const notificationContainer = document.getElementById("weather-notification-container")
 
-                    if (imageUrl) {
-                        imageContainer.innerHTML = `<img src="${imageUrl}" alt="Server Image"  />`;
+                        if (data.imageUrl) {
+                            console.log("Image URL:", data.imageUrl);
+                            imageContainer.innerHTML = `<img src="${data.imageUrl}" alt="Weather Image" />`;
+                        } else {
+                            imageContainer.innerHTML = `<p>Failed to fetch image. Server returned no URL.</p>`;
+                        }
+
+                        if (data.notificationString) {
+                            console.log("Received notification:", data.notificationString);
+                            notificationContainer.innerHTML = `<p> ${data.notificationString} </p>`;
+                        } else {
+                            console.log("Failed to receive notification:");
+                        }
+
+                        // Refresh page to show new data entry in table, 1 sec delay
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+
                     } else {
-                        imageContainer.innerHTML = `<p>Failed to fetch image. Server returned no URL.</p>`;
+                        alert(data.message || "Failed to add sensor data.");
                     }
                 })
                 .catch(error => {
-                    console.error("Error fetching image:", error);
-                    document.getElementById("weather-image-container").innerHTML = `<p>Error occurred. Please try again later.</p>`;
-                });
-        });
-
-        // Event listener for the notification button
-        document.getElementById("notification-btn").addEventListener("click", function () {
-
-            // Get anti-forgery token
-            const token = document.getElementById("antiforgery-token").value;
-
-            // Send AJAX request
-            fetch('@Url.Page("./Index", "FetchNotification")', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': token
-                },
-                body: JSON.stringify({})
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.text(); // Read server response (weather notification) as plain text
-                })
-                .then(notificationString => {
-                    console.log("Received weather notification:", notificationString);
-
-                    const notificationContainer = document.getElementById("weather-notification-container");
-
-                    if (notificationString) {
-                        notificationContainer.innerHTML = `<p>${notificationString}</p>`;
-                    } else {
-                        imageContainer.innerHTML = `<p>Failed to fetch notification. Server returned no notification string.</p>`;
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching notification:", error);
-                    document.getElementById("weather-notification-container").innerHTML = `<p>Error occurred. Please try again later.</p>`;
+                    console.error("Error adding sensor data:", error);
                 });
         });
 
@@ -204,39 +185,6 @@
                 .catch(error => {
                     console.error("Error fetching confirmation:", error);
                     document.getElementById("weather-graph-container").innerHTML = `<p>Error occurred. Please try again later.</p>`;
-                });
-        });
-
-        // Event listener for the sensor button
-        document.getElementById("sensor-btn").addEventListener("click", function () {
-
-            // Get anti-forgery token
-            const token = document.getElementById("antiforgery-token").value;
-
-            // Send AJAX request
-            fetch('@Url.Page("./Index", "FetchSensorData")', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': token
-                },
-                body: JSON.stringify({})
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    console.log("Response:", data);
-
-                    // Refresh page
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error("Error fetching confirmation:", error);
-                    alert("An error occurred. Please try again later.");
                 });
         });
     </script>

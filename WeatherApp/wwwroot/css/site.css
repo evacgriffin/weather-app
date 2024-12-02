@@ -69,6 +69,6 @@ body {
 }
 
 #weather-image-container img {
-    max-width: 300px;
+    max-width: 100px;
     height: auto;
 }

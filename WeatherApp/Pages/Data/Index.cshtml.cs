@@ -43,15 +43,6 @@ namespace WeatherApp.Pages.Data
         public string NotificationString { get; set; }
         public string GraphConfirmation { get; set; }
 
-        public ContentResult OnPostFetchImage()
-        {
-            // Send message to the microservice A image server
-            string message = "90";
-            string imageUrl = _zeroMqImageClient.SendMessage(message);
-
-            return Content(imageUrl);
-        }
-
         public async Task<IActionResult> OnPostFetchSensorData()
         {
             // Send message to the microservice B sensor server - sending a 1 bit will request new sensor data
@@ -84,11 +75,17 @@ namespace WeatherApp.Pages.Data
                     _context.DataPoint.Add(dataPoint);
                     await _context.SaveChangesAsync();
 
-                    return Content("Sensor data saved successfully.");
+                    // Get the new temperature that was just returned from the sensor
+                    string sensorTemp = sensorData.Temperature.ToString();
+                    // Send the temperature to the image microservice to request a matching image for the new temp
+                    StaticState.weatherImageUrl = _zeroMqImageClient.SendMessage(sensorTemp);
+                    StaticState.weatherNotificationString = _zeroMqNotificationClient.SendMessage(sensorTemp);
+
+                    return new JsonResult(new { success = true, imageUrl = StaticState.weatherImageUrl, notificationString = StaticState.weatherNotificationString });
                 }
                 else
                 {
-                    return Content("Failed to parse sensor data.");
+                    return new JsonResult(new { success = false, message = "Invalid sensor data." });
                 }
             }
             catch (Exception ex)
@@ -99,45 +96,30 @@ namespace WeatherApp.Pages.Data
             }
         }
 
-        public ContentResult OnPostFetchNotification()
-        {
-            // Send message to the microservice C server
-            string message = "90";
-            string imageUrl = _zeroMqNotificationClient.SendMessage(message);
-
-            return Content(imageUrl);
-        }
-
         public ContentResult OnPostGenerateGraph()
         {
-            // Some test data
-            var testData = new List<object>
+            // Get data points from the database
+            var dataPoints = _context.DataPoint.ToList();
+
+            if (dataPoints == null || !dataPoints.Any())
             {
-                new { date = "11/22/2024", temp = 40 },
-                new { date = "11/23/2024", temp = 40 },
-                new { date = "11/24/2024", temp = 41 },
-                new { date = "11/25/2024", temp = 42 },
-                new { date = "11/26/2024", temp = 40 }
-            };
-
-            // Initialize a list to store server responses
-            var responses = new List<string>();
-
-            foreach (var dataPoint in testData)
-            {
-                // Serialize to JSON
-                string jsonData = JsonSerializer.Serialize(dataPoint);
-
-                // Send message to the microservice D server
-                string response = _zeroMqGraphClient.SendMessage(jsonData);
-
-                // Store the server response
-                responses.Add(response);
+                return Content("No data points available.");
             }
 
-            // Return the combined responses
-            string combinedResponse = string.Join(", ", responses);
-            return Content(combinedResponse);
+            var jsonData = dataPoints.Select(dp => new
+            {
+                date = dp.DateTime.ToString("MM/dd/yyyy"),
+                temp = dp.Temperature
+            }).ToList();
+
+            // Serialize to JSON
+            string serializedJson = JsonSerializer.Serialize(jsonData);
+
+            // Send message to the graph microservice
+            string response = _zeroMqGraphClient.SendMessage(serializedJson);
+
+            // Return server response
+            return Content(response);
         }
 
         public IList<DataPoint> DataPoint { get;set; } = default!;
