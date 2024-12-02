@@ -16,13 +16,13 @@ and generate a graph of temperature data.
 
 ## Run the App
 
-# Prerequisites
+### Prerequisites
 
 Before running the Weather App, make sure you have the following installed and set up:
 - [Visual Studio](https://visualstudio.microsoft.com/) with ASP.NET and web development workload or [Visual Studio Code](https://code.visualstudio.com/) with C# extension (Note: This app was developed using Visual Studio 2022)
 - [.NET 9.0](https://dotnet.microsoft.com/en-us/download)
 
-# Microservices Setup
+### Microservices Setup
 
 The app depends on the following four microservices:
 1. [Weather Sensor Microservice](https://github.com/evacgriffin/weather-sensor)
@@ -30,7 +30,7 @@ The app depends on the following four microservices:
 3. [Weather Notification Microservice](https://github.com/evacgriffin/weather-notification)
 4. [Graph Generator Microservice](https://github.com/evacgriffin/graph-generator)
 
-# Running the App
+### Running the App
 
 1. Clone the repository to the directory of your choice on your local machine:
     ```shell
