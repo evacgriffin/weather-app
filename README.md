@@ -38,16 +38,22 @@ the temperature for each date. The graph will be saved on the microservice side,
 
 ## Screenshots
 ![main-page](/screenshots/main_page.png)
+Homepage of the Weather App
 
 ![add-data](/screenshots/manually_add.png)
+Manually adding data
 
 ![edit-data](/screenshots/edit_data.png)
+Editing data
 
 ![delete-data](/screenshots/delete_data.png)
+Deleting data
 
 ![notification-and-image](/screenshots/notification_and_image.png)
+Image and notification displayed after receiving new sensor data
 
 ![graph-confirmation](/screenshots/graph_confirmation.png)
+Confirmation displayed after generating a graph
 
 
 ## License
