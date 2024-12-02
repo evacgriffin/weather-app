@@ -25,38 +25,34 @@ public static class SeedData
             context.DataPoint.AddRange(
                 new DataPoint
                 {
-                    Location = "Sammamish",
-                    Date = DateTime.Today,
-                    Time = DateTime.Now,
-                    Temperature = 58,
-                    Humidity = 74
+                    Location = "Office",
+                    DateTime = DateTime.Now,
+                    Temperature = 68,
+                    Humidity = 46
                 },
 
                 new DataPoint
                 {
-                    Location = "Issaquah",
-                    Date = DateTime.Today,
-                    Time = DateTime.Now,
-                    Temperature = 56,
-                    Humidity = 74
+                    Location = "Office",
+                    DateTime = DateTime.Now,
+                    Temperature = 69,
+                    Humidity = 46
                 },
 
                 new DataPoint
                 {
-                    Location = "Redmond",
-                    Date = DateTime.Today,
-                    Time = DateTime.Now,
-                    Temperature = 51,
-                    Humidity = 74
+                    Location = "Office",
+                    DateTime = DateTime.Now,
+                    Temperature = 68,
+                    Humidity = 45
                 },
 
                 new DataPoint
                 {
-                    Location = "Seattle",
-                    Date = DateTime.Today,
-                    Time = DateTime.Now,
-                    Temperature = 61,
-                    Humidity = 83
+                    Location = "Office",
+                    DateTime = DateTime.Now,
+                    Temperature = 69,
+                    Humidity = 45
                 }
             );
             context.SaveChanges();

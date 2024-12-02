@@ -10,7 +10,7 @@
 <div class="how-to">
     <h2>How To</h2>
     <p>
-        Welcome to WeatherApp! Below, you can view weather data from different locations. Click <strong>Add New Data</strong> below to add a new data entry to the database. To make changes, you can <strong>Edit</strong> or <strong>Delete</strong> an existing data entry by clicking the corresponding link next to it on the right side in the table.
+        Welcome to WeatherApp! Below, you can view weather data from different locations. Click <strong>Add New Data</strong> below to manually add a new data entry to the database. Click the <strong>Request Sensor Data</strong> button to request a new sensor measurement. To make changes, you can <strong>Edit</strong> or <strong>Delete</strong> an existing data entry by clicking the corresponding link next to it on the right side in the table.
     </p>
 </div>
 
@@ -28,6 +28,8 @@
     </p>
 </form>
 
+<button class="btn-primary" id="sensor-btn">Request Sensor Data</button>
+
 <table class="table">
     <thead>
         <tr>
@@ -35,10 +37,7 @@
                 @Html.DisplayNameFor(model => model.DataPoint[0].Location)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DataPoint[0].Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataPoint[0].Time)
+                @Html.DisplayNameFor(model => model.DataPoint[0].DateTime)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DataPoint[0].Temperature)
@@ -56,10 +55,7 @@
                 @Html.DisplayFor(modelItem => item.Location)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Time)
+                @Html.DisplayFor(modelItem => item.DateTime)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Temperature)
@@ -76,11 +72,23 @@
     </tbody>
 </table>
 
-<div id="weather-image-container">
+<div class="microservice-container" id="weather-image-container">
     <p>Click the button to load an image.</p>
 </div>
 
-<button id="image-btn">Display Image</button>
+<button class="btn-primary" id="image-btn">Display Image</button>
+
+<div class="microservice-container" id="weather-notification-container">
+    <p>Click the button to receive a notification.</p>
+</div>
+
+<button class="btn-primary" id="notification-btn">Display Notification</button>
+
+<div class="microservice-container" id="weather-graph-container">
+    <p>Click the button to generate a graph of your data.</p>
+</div>
+
+<button class="btn-primary" id="graph-btn">Generate Graph</button>
 
 <input type="hidden" id="antiforgery-token" value="@Model.AntiForgeryToken" />
 @section Scripts {
@@ -120,6 +128,115 @@
                 .catch(error => {
                     console.error("Error fetching image:", error);
                     document.getElementById("weather-image-container").innerHTML = `<p>Error occurred. Please try again later.</p>`;
+                });
+        });
+
+        // Event listener for the notification button
+        document.getElementById("notification-btn").addEventListener("click", function () {
+
+            // Get anti-forgery token
+            const token = document.getElementById("antiforgery-token").value;
+
+            // Send AJAX request
+            fetch('@Url.Page("./Index", "FetchNotification")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({})
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text(); // Read server response (weather notification) as plain text
+                })
+                .then(notificationString => {
+                    console.log("Received weather notification:", notificationString);
+
+                    const notificationContainer = document.getElementById("weather-notification-container");
+
+                    if (notificationString) {
+                        notificationContainer.innerHTML = `<p>${notificationString}</p>`;
+                    } else {
+                        imageContainer.innerHTML = `<p>Failed to fetch notification. Server returned no notification string.</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching notification:", error);
+                    document.getElementById("weather-notification-container").innerHTML = `<p>Error occurred. Please try again later.</p>`;
+                });
+        });
+
+        // Event listener for the graph button
+        document.getElementById("graph-btn").addEventListener("click", function () {
+
+            // Get anti-forgery token
+            const token = document.getElementById("antiforgery-token").value;
+
+            // Send AJAX request
+            fetch('@Url.Page("./Index", "GenerateGraph")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({})
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text(); // Read server response (graph confirmation) as plain text
+                })
+                .then(graphConfirmation => {
+                    console.log("Received graph confirmation:", graphConfirmation);
+
+                    const graphContainer = document.getElementById("weather-graph-container");
+
+                    if (graphConfirmation) {
+                        graphContainer.innerHTML = `<p>${graphConfirmation}</p>`;
+                    } else {
+                        graphContainer.innerHTML = `<p>Failed to fetch feedback about graph generation. Server returned no feedback string.</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching confirmation:", error);
+                    document.getElementById("weather-graph-container").innerHTML = `<p>Error occurred. Please try again later.</p>`;
+                });
+        });
+
+        // Event listener for the sensor button
+        document.getElementById("sensor-btn").addEventListener("click", function () {
+
+            // Get anti-forgery token
+            const token = document.getElementById("antiforgery-token").value;
+
+            // Send AJAX request
+            fetch('@Url.Page("./Index", "FetchSensorData")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({})
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    console.log("Response:", data);
+
+                    // Refresh page
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error("Error fetching confirmation:", error);
+                    alert("An error occurred. Please try again later.");
                 });
         });
     </script>

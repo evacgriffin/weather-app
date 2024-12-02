@@ -10,7 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<WeatherAppContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("WeatherAppContext") ?? throw new InvalidOperationException("Connection string 'WeatherAppContext' not found.")));
-builder.Services.AddSingleton<ZeroMqClient>(sp => new ZeroMqClient("tcp://localhost:5555"));
 
 var app = builder.Build();
 

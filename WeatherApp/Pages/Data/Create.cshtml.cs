@@ -40,5 +40,28 @@ namespace WeatherApp.Pages.Data
 
             return RedirectToPage("./Index");
         }
+
+        // Adds new sensor data to the model
+        public async Task<IActionResult> OnPostAddSensorDataAsync([FromBody] DataPoint sensorData)
+        {
+            try
+            {
+                // Validate and add the sensor data to the database
+                if (sensorData != null)
+                {
+                    _context.DataPoint.Add(sensorData);
+                    await _context.SaveChangesAsync();
+                    return new JsonResult(new { success = true });
+                }
+
+                return new JsonResult(new { success = false, message = "Invalid sensor data." });
+            }
+            catch (Exception error)
+            {
+                // Log the error and return a failure response
+                Console.Error.WriteLine($"Error adding sensor data: {error.Message}");
+                return new JsonResult(new { success = false, message = "An error occurred while processing the sensor data." });
+            }
+        }
     }
 }
