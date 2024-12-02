@@ -6,6 +6,7 @@
 - [Run the App](#run-the-app)
 - [Usage](#usage)
 - [Screenshots](#screenshots)
+- [Collaborators](#collaborators)
 - [License](#license)
 - [Roadmap](#roadmap)
 
@@ -15,7 +16,28 @@ and generate a graph of temperature data.
 
 ## Run the App
 
-Pending...
+# Prerequisites
+
+Before running the Weather App, make sure you have the following installed and set up:
+- [Visual Studio](https://visualstudio.microsoft.com/) with ASP.NET and web development workload or [Visual Studio Code](https://code.visualstudio.com/) with C# extension (Note: This app was developed using Visual Studio 2022)
+- [.NET 9.0](https://dotnet.microsoft.com/en-us/download)
+
+# Microservices Setup
+
+The app depends on the following four microservices:
+1. [Weather Sensor Microservice](https://github.com/evacgriffin/weather-sensor)
+2. [Weather Image Microservice](https://github.com/peterb3/Weather-Image-Generator)
+3. [Weather Notification Microservice](https://github.com/evacgriffin/weather-notification)
+4. [Graph Generator Microservice](https://github.com/evacgriffin/graph-generator)
+
+# Running the App
+
+1. Clone the repository to the directory of your choice on your local machine:
+    ```shell
+    git clone https://github.com/evacgriffin/weather-app
+   ```
+2. Open Visual Studio
+3. Navigate to the cloned project directory and open the solution file
 
 ## Usage
 
@@ -60,7 +82,9 @@ Image and notification displayed after receiving new sensor data
 ![graph-confirmation](/screenshots/graph_confirmation.png)  
 Confirmation displayed after generating a graph  
 
+## Collaborators
 
+- [Peter Battisti](https://github.com/peterb3) - Developed the Weather Image Microservice
 
 ## License
 
