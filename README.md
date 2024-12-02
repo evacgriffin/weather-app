@@ -45,9 +45,9 @@ the temperature for each date. The graph will be saved on the microservice side,
 
 ![delete-data](/screenshots/delete_data.png)
 
-![after-requesting-from-microservices](/screenshots/after_requesting_data.png)
+![notification-and-image](/screenshots/notification_and_image.png)
 
-![generated-graph](/screenshots/generated_graph.png)
+![graph-confirmation](/screenshots/graph_confirmation.png)
 
 
 ## License
