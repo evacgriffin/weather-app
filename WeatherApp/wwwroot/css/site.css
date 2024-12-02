@@ -19,6 +19,7 @@ html {
     border-color: black;
     border-radius: 5px;
     padding: 5px 10px;
+    margin-bottom: 15px;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
